@@ -8,6 +8,7 @@ import time
 import threading
 import streamlit as st
 from src.api.groq_client import generate_flashcards, DEPTH_CARD_COUNT
+from src.components.welcome import render_creator_footer
 
 
 _LOADING_TIPS = [
@@ -55,6 +56,9 @@ def render_loading_screen() -> None:
         )
 
     _show_tip(0)
+
+    # ── Creator footer (visible while loading) ────────────────────────────────
+    render_creator_footer()
 
     # ── API Call ──────────────────────────────────────────────────────────────
     api_key = st.session_state.get("groq_api_key", "")
