@@ -7,6 +7,7 @@ Screen 4 - Flashcard Viewer
 import streamlit as st
 from src.export.image_export import card_to_png_bytes
 from src.export.pdf_export import deck_to_pdf_bytes
+from src.components.welcome import render_creator_footer
 
 
 def render_flashcard_screen() -> None:
@@ -250,3 +251,6 @@ def render_flashcard_screen() -> None:
                 st.session_state.current_card = i
                 st.session_state.flipped = False
                 st.rerun()
+
+    # ── Creator footer ────────────────────────────────────────────────────────
+    render_creator_footer()
