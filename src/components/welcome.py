@@ -9,7 +9,7 @@ import streamlit as st
 
 # ── Creator branding constants ─────────────────────────────────────────────────
 _CREATOR_NAME     = "Aseem Mehrotra"
-_CREATOR_TITLE    = "Data & AI Builder · Ex-ADNOC · FinTech & Data Science"
+_CREATOR_TITLE    = "Instrumentation & Control Engineer"
 _CREATOR_LINKEDIN = "https://www.linkedin.com/in/aseem-mehrotra/"
 _CREATOR_GITHUB   = "https://github.com/aseemm84"
 _CREATOR_LOCATION = "Abu Dhabi, UAE"
