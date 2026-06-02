@@ -5,6 +5,7 @@ Lets the user choose what to learn and at what depth.
 """
 
 import streamlit as st
+from src.components.welcome import render_creator_footer
 
 DEPTH_CONFIG = {
     "Basic":        {"cards": 15, "icon": "🌱", "desc": "Core concepts, perfect starting point"},
@@ -156,3 +157,6 @@ def render_topic_screen() -> None:
             "<small style='color:#64748B'>↑ Enter a topic to unlock generation</small>",
             unsafe_allow_html=True,
         )
+
+    # ── Creator footer ────────────────────────────────────────────────────────
+    render_creator_footer()
