@@ -7,6 +7,210 @@ Also auto-loads GROQ_API_KEY from st.secrets if available (for cloud deployment)
 
 import streamlit as st
 
+# ── Creator branding constants ─────────────────────────────────────────────────
+_CREATOR_NAME     = "Aseem Mehrotra"
+_CREATOR_TITLE    = "Data & AI Builder · Ex-ADNOC · FinTech & Data Science"
+_CREATOR_LINKEDIN = "https://www.linkedin.com/in/aseem-mehrotra/"
+_CREATOR_GITHUB   = "https://github.com/aseemm84"
+_CREATOR_LOCATION = "Abu Dhabi, UAE"
+
+# ── Shared footer injected on every screen ─────────────────────────────────────
+_FOOTER_HTML = f"""
+<style>
+  /* ── Creator footer ── */
+  .fl-creator-footer {{
+    margin-top: 3rem;
+    padding: 1.4rem 2rem;
+    border-top: 1px solid rgba(255,255,255,0.07);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.8rem;
+  }}
+  .fl-creator-left {{
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+  }}
+  .fl-creator-avatar {{
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #7C3AED, #06B6D4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    font-weight: 700;
+    color: #fff;
+    flex-shrink: 0;
+    letter-spacing: -0.5px;
+  }}
+  .fl-creator-info {{
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+  }}
+  .fl-creator-byline {{
+    font-size: 0.72rem;
+    color: #475569;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-weight: 600;
+  }}
+  .fl-creator-name {{
+    font-size: 0.92rem;
+    font-weight: 700;
+    color: #CBD5E1;
+  }}
+  .fl-creator-role {{
+    font-size: 0.76rem;
+    color: #475569;
+  }}
+  .fl-creator-links {{
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+  }}
+  .fl-social-btn {{
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.38rem 0.85rem;
+    border-radius: 8px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    text-decoration: none !important;
+    transition: all 0.2s ease;
+    border: 1px solid;
+  }}
+  .fl-social-btn.linkedin {{
+    background: rgba(10, 102, 194, 0.12);
+    border-color: rgba(10, 102, 194, 0.35);
+    color: #60A5FA !important;
+  }}
+  .fl-social-btn.linkedin:hover {{
+    background: rgba(10, 102, 194, 0.25);
+    border-color: rgba(10, 102, 194, 0.65);
+    transform: translateY(-1px);
+  }}
+  .fl-social-btn.github {{
+    background: rgba(255,255,255,0.05);
+    border-color: rgba(255,255,255,0.12);
+    color: #94A3B8 !important;
+  }}
+  .fl-social-btn.github:hover {{
+    background: rgba(255,255,255,0.10);
+    border-color: rgba(255,255,255,0.25);
+    color: #F1F5F9 !important;
+    transform: translateY(-1px);
+  }}
+  /* ── Sidebar creator card ── */
+  .fl-sidebar-creator {{
+    margin-top: 0.5rem;
+    padding: 1rem 0.8rem;
+    background: rgba(124,58,237,0.06);
+    border: 1px solid rgba(124,58,237,0.18);
+    border-radius: 12px;
+  }}
+  .fl-sidebar-creator-name {{
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: #CBD5E1;
+    margin-bottom: 0.15rem;
+  }}
+  .fl-sidebar-creator-role {{
+    font-size: 0.73rem;
+    color: #64748B;
+    line-height: 1.4;
+    margin-bottom: 0.7rem;
+  }}
+  .fl-sidebar-links {{
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }}
+  .fl-sidebar-link {{
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.28rem 0.7rem;
+    border-radius: 6px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    text-decoration: none !important;
+    border: 1px solid;
+  }}
+  .fl-sidebar-link.li {{
+    background: rgba(10,102,194,0.10);
+    border-color: rgba(10,102,194,0.30);
+    color: #60A5FA !important;
+  }}
+  .fl-sidebar-link.gh {{
+    background: rgba(255,255,255,0.05);
+    border-color: rgba(255,255,255,0.12);
+    color: #94A3B8 !important;
+  }}
+  .fl-sidebar-link:hover {{
+    filter: brightness(1.2);
+    transform: translateY(-1px);
+  }}
+</style>
+
+<div class="fl-creator-footer">
+  <div class="fl-creator-left">
+    <div class="fl-creator-avatar">AM</div>
+    <div class="fl-creator-info">
+      <span class="fl-creator-byline">Built by</span>
+      <span class="fl-creator-name">{_CREATOR_NAME}</span>
+      <span class="fl-creator-role">{_CREATOR_TITLE}</span>
+    </div>
+  </div>
+  <div class="fl-creator-links">
+    <a href="{_CREATOR_LINKEDIN}" target="_blank" class="fl-social-btn linkedin">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+      </svg>
+      LinkedIn
+    </a>
+    <a href="{_CREATOR_GITHUB}" target="_blank" class="fl-social-btn github">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0112 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/>
+      </svg>
+      GitHub
+    </a>
+  </div>
+</div>
+"""
+
+# ── Sidebar creator card HTML ──────────────────────────────────────────────────
+_SIDEBAR_CREATOR_HTML = f"""
+<div class="fl-sidebar-creator">
+  <div class="fl-sidebar-creator-name">👨‍💻 {_CREATOR_NAME}</div>
+  <div class="fl-sidebar-creator-role">{_CREATOR_TITLE}<br>{_CREATOR_LOCATION}</div>
+  <div class="fl-sidebar-links">
+    <a href="{_CREATOR_LINKEDIN}" target="_blank" class="fl-sidebar-link li">
+      <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+      </svg>
+      LinkedIn
+    </a>
+    <a href="{_CREATOR_GITHUB}" target="_blank" class="fl-sidebar-link gh">
+      <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0112 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/>
+      </svg>
+      GitHub
+    </a>
+  </div>
+</div>
+"""
+
+
+def render_creator_footer() -> None:
+    """Renders the persistent creator branding footer. Call at the end of every screen."""
+    st.markdown(_FOOTER_HTML, unsafe_allow_html=True)
+
 # ── Profession → Sub-profession map ───────────────────────────────────────────
 PROFESSION_MAP: dict[str, list[str]] = {
     "Student": [
@@ -81,6 +285,25 @@ def render_welcome_screen() -> None:
         '<p class="fl-subtitle">Adaptive flashcards, tailored to <em>you</em>.</p>',
         unsafe_allow_html=True,
     )
+    # Subtle creator credit directly under the hero tagline
+    st.markdown(
+        f"""
+        <p style="text-align:center; font-size:0.78rem; color:#334155;
+                  margin-top:0.5rem; margin-bottom:0;">
+          Crafted by
+          <a href="{_CREATOR_LINKEDIN}" target="_blank"
+             style="color:#7C3AED; text-decoration:none; font-weight:600;">
+            {_CREATOR_NAME}
+          </a>
+          &nbsp;·&nbsp;
+          <a href="{_CREATOR_GITHUB}" target="_blank"
+             style="color:#475569; text-decoration:none;">
+            View on GitHub ↗
+          </a>
+        </p>
+        """,
+        unsafe_allow_html=True,
+    )
 
     st.markdown("<br>", unsafe_allow_html=True)
 
@@ -115,6 +338,10 @@ def render_welcome_screen() -> None:
             "100% free and open source.</small>",
             unsafe_allow_html=True,
         )
+        st.markdown("---")
+        # ── Creator card in sidebar ───────────────────────────────────────────
+        st.markdown("### 👨‍💻 About the Creator")
+        st.markdown(_SIDEBAR_CREATOR_HTML, unsafe_allow_html=True)
         st.markdown("---")
         st.markdown(
             "<small style='color:#475569'>Built with Streamlit, Groq, "
@@ -217,6 +444,9 @@ def render_welcome_screen() -> None:
     _feature_card(c1, "🧠", "Age-Adaptive AI", "Content difficulty tuned to your age and background.")
     _feature_card(c2, "⚡", "Instant Generation", "30 flashcards in under 10 seconds with Llama 4.")
     _feature_card(c3, "📤", "Export Anywhere", "Save cards as PNG images or download the full PDF deck.")
+
+    # ── Creator footer ────────────────────────────────────────────────────────
+    render_creator_footer()
 
 
 def _feature_card(col, icon: str, title: str, desc: str) -> None:
